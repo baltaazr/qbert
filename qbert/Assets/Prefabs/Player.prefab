@@ -58,7 +58,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 0.3, y: 0.3}
   m_EdgeRadius: 0
 --- !u!50 &2680373587817270797
 Rigidbody2D:
@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7f96a63d2350c2dba14e5f078704e40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveTime: 0.5
+  moveTime: 0.2
   blockingLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -170,4 +170,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 1436d5fb3dba9c613ab188354259a285, type: 3}
   - {fileID: 21300000, guid: b02b93c0c6715f752b941b445777e384, type: 3}
   - {fileID: 21300000, guid: 39d365982a517e6759833d8b5657de30, type: 3}
+  moveSound1: {fileID: 0}
+  moveSound2: {fileID: 0}
+  moveSound3: {fileID: 0}
+  teleportSound: {fileID: 0}
   deathDelay: 2

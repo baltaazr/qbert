@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc688396b617c9a779f72d6251019456, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelStartDelay: 2
+  levelStartDelay: 10
   roundEndDelay: 2
   delayPerEnemySpawn: 5
   delayPerEnemyMove: 1
@@ -67,6 +67,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0b9737f778900c3718ff0bd561c51d62, type: 3}
   - {fileID: 21300000, guid: 58f1b82c26ab471bab510eb6cf5cd77c, type: 3}
   - {fileID: 21300000, guid: 1ad909d5bdb9329408c130229df687b0, type: 3}
+  levelUpSound: {fileID: 8300000, guid: 5e2a0e6afb42f65fd8fb2557e35b54cc, type: 3}
   mapScript: {fileID: 0}
   playersTurn: 1
   doingSetup: 0

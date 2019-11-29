@@ -7,18 +7,18 @@ using Random = UnityEngine.Random;
 
 public class MapManager : MonoBehaviour
 {
-  public static float teleDelay = 0.5f;
-
   public GameObject cube;
   public GameObject tele;
   public Sprite[] cubeSprites;
   public Sprite[] teleDisappearSprites;
+  public static bool loaded = false;
 
   private Map map = new Map();
   private Transform mapHolder;
   private Dictionary<string, GameObject> cubes;
   private Dictionary<string, GameObject> teles;
   private Sprite[] curCubeColors;
+  private Sprite[] endRoundCubeColors;
   private int cubesChanged = 0;
   private string removeTeleCoords;
 
@@ -29,9 +29,23 @@ public class MapManager : MonoBehaviour
     teles = new Dictionary<string, GameObject>();
     int[] curCubeColorsIdx = Config.LEVELS[level - 1, round - 1];
     curCubeColors = new Sprite[curCubeColorsIdx.Length];
-    for (int i = 0; i < curCubeColorsIdx.Length; i++)
+    endRoundCubeColors = new Sprite[3];
+    for (int i = 0; i < curCubeColors.Length; i++)
     {
       curCubeColors[i] = cubeSprites[curCubeColorsIdx[i]];
+    }
+    if (curCubeColors.Length == 2)
+    {
+      endRoundCubeColors[0] = curCubeColors[0];
+      endRoundCubeColors[1] = curCubeColors[1];
+      endRoundCubeColors[2] = cubeSprites[curCubeColorsIdx[1] + 1];
+    }
+    else
+    {
+      for (int i = 3; i > 0; i--)
+      {
+        endRoundCubeColors[3 - i] = curCubeColors[curCubeColors.Length - i];
+      }
     }
     MapSetup();
 
@@ -89,7 +103,7 @@ public class MapManager : MonoBehaviour
   {
     if (!teles.ContainsKey(stringRep)) { return false; }
     removeTeleCoords = stringRep;
-    Invoke("Tele", teleDelay);
+    Invoke("Tele", Config.INIT_TELE_DELAY);
     return true;
   }
 
@@ -120,7 +134,7 @@ public class MapManager : MonoBehaviour
       if (cubesChanged == (curCubeColors.Length - 1) * Config.NUMBER_OF_CUBES)
       {
         cubesChanged = 0;
-        Restart();
+        StartCoroutine(Restart());
       }
     }
   }
@@ -136,8 +150,21 @@ public class MapManager : MonoBehaviour
     }
   }
 
-  void Restart()
+  IEnumerator Restart()
   {
+    GameManager.instance.EndRound();
+    for (int i = 0; i < Config.END_ROUND_COLOR_CHANGING_REPEATS; i++)
+    {
+      for (int j = 0; j < 3; j++)
+      {
+        foreach (KeyValuePair<string, GameObject> cube in cubes)
+        {
+          cube.Value.GetComponent<SpriteRenderer>().sprite = endRoundCubeColors[j];
+        }
+        yield return new WaitForSeconds(Config.ANIMATION_DELAY);
+      }
+    }
+    loaded = true;
     SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
   }
 

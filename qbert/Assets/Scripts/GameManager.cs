@@ -10,13 +10,6 @@ public class GameManager : MonoBehaviour
 {
   public static GameManager instance = null;
 
-  public float levelStartDelay = 2f;
-  public float roundEndDelay = 2f;
-  public float delayPerEnemySpawn = 5f;
-  public float delayPerEnemyMove = 1f;
-  public float initEnemySpawnDelay = 2f;
-  public float deathDelay = 2f;
-  public int lives = 2;
   public GameObject coily;
   public GameObject redBall;
   public GameObject wrongway;
@@ -26,12 +19,15 @@ public class GameManager : MonoBehaviour
   public GameObject lifeSprite;
   public List<GameObject> lifeSprites;
   public Sprite[] gameOverSprites;
+  public AudioClip levelUpSound;
   [HideInInspector] public MapManager mapScript;
   [HideInInspector] public bool playersTurn = true;
   [HideInInspector] public bool doingSetup = true;
 
   private GameObject levelImage;
   private GameObject gameOverImage;
+  private GameObject endingImage;
+  private int lives = 2;
   private int level = 1;
   private int round = 1;
   private List<Enemy> enemies;
@@ -57,17 +53,44 @@ public class GameManager : MonoBehaviour
 
   static private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
   {
-    instance.round += 1;
-    if (instance.round > Config.NUMBER_OF_ROUNDS)
+    if (MapManager.loaded)
     {
-      instance.round = 1;
-      instance.level += 1;
-    }
+      instance.round += 1;
+      if (instance.round > Config.NUMBER_OF_ROUNDS)
+      {
+        instance.round = 1;
+        instance.level += 1;
 
-    instance.InitGame();
+      }
+      if (instance.level <= Config.NUMBER_OF_LEVELS)
+      {
+        instance.InitGame();
+      }
+      else
+      {
+        instance.End();
+      }
+    }
   }
 
   void InitGame()
+  {
+    mapScript.SetupScene(level, round);
+    InitLives();
+    InitUI();
+    StartCoroutine(InitGameScreens());
+  }
+
+  public void EndRound()
+  {
+    playersTurn = true;
+    doingSetup = true;
+    enemies.Clear();
+    nCoily = 0;
+    StopAllCoroutines();
+  }
+
+  void InitLives()
   {
     lives = level + 1;
     lifeSprites = new List<GameObject>();
@@ -78,43 +101,38 @@ public class GameManager : MonoBehaviour
       instance.GetComponent<RectTransform>().anchoredPosition = new Vector2(50f, -150f - i * (50f));
       lifeSprites.Add(instance);
     }
-    playersTurn = true;
-    StopAllCoroutines();
+  }
 
+  void InitUI()
+  {
     levelImage = GameObject.Find("LevelImage");
     gameOverImage = GameObject.Find("GameOverImage");
+    endingImage = GameObject.Find("EndingImage");
     gameOverImage.SetActive(false);
-    if (round == 1)
-    {
-      doingSetup = true;
-      TextMeshProUGUI levelText = GameObject.Find("LevelText").GetComponent<TextMeshProUGUI>();
-      TextMeshProUGUI levelImageText = GameObject.Find("LevelImageText").GetComponent<TextMeshProUGUI>();
-      levelText.text = string.Format("Level: {0}", level);
-      levelImageText.text = string.Format("{0}", level);
-      levelImage.SetActive(true);
-      Invoke("HideLevelImage", levelStartDelay);
-    }
-    else
-    {
-      levelImage.SetActive(false);
-      Invoke("InitEnemies", initEnemySpawnDelay);
-    }
-    enemies.Clear();
-    mapScript.SetupScene(level, round);
-    nCoily = 0;
+    endingImage.SetActive(false);
 
     TextMeshProUGUI roundText = GameObject.Find("RoundText").GetComponent<TextMeshProUGUI>();
     Image alterToCubeImage = GameObject.Find("AlterToCube").GetComponent<Image>();
     roundText.text = string.Format("Round: {0}", round);
     alterToCubeImage.sprite = mapScript.getAlterToCubeSprite();
-
   }
 
-  void HideLevelImage()
+  IEnumerator InitGameScreens()
   {
+    if (round == 1)
+    {
+      SoundManager.instance.PlaySingle(levelUpSound);
+      TextMeshProUGUI levelText = GameObject.Find("LevelText").GetComponent<TextMeshProUGUI>();
+      TextMeshProUGUI levelImageText = GameObject.Find("LevelImageText").GetComponent<TextMeshProUGUI>();
+      levelText.text = string.Format("Level: {0}", level);
+      levelImageText.text = string.Format("{0}", level);
+      levelImage.SetActive(true);
+      yield return new WaitForSeconds(Config.LEVEL_START_DELAY);
+    }
     levelImage.SetActive(false);
     doingSetup = false;
-    Invoke("InitEnemies", initEnemySpawnDelay);
+    yield return new WaitForSeconds(Config.INIT_ENEMIES_DELAY);
+    InitEnemies();
   }
 
   public void LoseLife()
@@ -123,18 +141,30 @@ public class GameManager : MonoBehaviour
     GameObject lostLife = lifeSprites[lifeSprites.Count - 1];
     Destroy(lostLife);
     lifeSprites.Remove(lostLife);
+    Invoke("DestroyEnemies", Config.PLAYER_REAPPEAR_DELAY);
     if (lives == 0)
     {
-      Invoke("GameOver", deathDelay);
+      Invoke("GameOver", Config.GAME_OVER_DELAY);
+    }
+    else
+    {
+      Invoke("InitEnemies", Config.PLAYER_REAPPEAR_DELAY + Config.INIT_ENEMIES_DELAY);
     }
   }
 
   void GameOver()
   {
     doingSetup = true;
+    StartCoroutine(GameOverAnimation());
+  }
+
+  void End()
+  {
+    endingImage.SetActive(true);
+    doingSetup = true;
     StopAllCoroutines();
     enemies.Clear();
-    StartCoroutine(GameOverAnimation());
+    StartCoroutine(StopGame());
   }
 
   public void AddEnemyToList(Enemy script)
@@ -182,7 +212,7 @@ public class GameManager : MonoBehaviour
         }
       }
 
-      yield return new WaitForSeconds(delayPerEnemySpawn);
+      yield return new WaitForSeconds(Config.DELAY_PER_ENEMY_SPAWN);
     }
   }
 
@@ -194,7 +224,7 @@ public class GameManager : MonoBehaviour
       {
         enemies[i].MoveEnemy();
       }
-      yield return new WaitForSeconds(delayPerEnemyMove);
+      yield return new WaitForSeconds(Config.DELAY_PER_ENEMY_MOVE);
     }
   }
 
@@ -202,6 +232,17 @@ public class GameManager : MonoBehaviour
   {
     StartCoroutine(SpawnEnemy());
     StartCoroutine(MoveEnemies());
+  }
+
+  void DestroyEnemies()
+  {
+    StopAllCoroutines();
+    foreach (Enemy enemy in enemies)
+    {
+      enemy.DestroyEnemy();
+    }
+    enemies.Clear();
+    nCoily = 0;
   }
 
   IEnumerator GameOverAnimation()
@@ -213,6 +254,15 @@ public class GameManager : MonoBehaviour
       gameOverSprite.sprite = gameOverSprites[i];
       yield return new WaitForSeconds(Config.ANIMATION_DELAY);
     }
+    StartCoroutine(StopGame());
   }
+
+  IEnumerator StopGame()
+  {
+    yield return new WaitForSeconds(3f);
+    Destroy(gameObject);
+    SceneManager.LoadScene(0);
+  }
+
   public void DecreaseCoilyCount() { nCoily -= 1; }
 }

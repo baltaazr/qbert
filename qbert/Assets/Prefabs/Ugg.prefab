@@ -107,7 +107,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 0.3, y: 0.3}
   m_EdgeRadius: 0
 --- !u!50 &7678160696358514605
 Rigidbody2D:
@@ -142,9 +142,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fd25e32242f46d098340b4710d1741a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveTime: 0.1
+  moveTime: 0.2
   blockingLayer:
     serializedVersion: 2
     m_Bits: 256
   frontView: {fileID: 21300000, guid: 16726bc0ddc4c98488655ca5729c30c7, type: 3}
   hopDown: {fileID: 21300000, guid: 9e46331c6b2236b648a406b1eb2f8497, type: 3}
+  deathDelay: 0.5

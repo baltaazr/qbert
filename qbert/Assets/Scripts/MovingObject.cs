@@ -4,7 +4,6 @@ using UnityEngine;
 
 public abstract class MovingObject : MonoBehaviour
 {
-  public float moveTime = 0.2f;
   public LayerMask blockingLayer;
 
   protected Sprite interSprite;
@@ -20,7 +19,7 @@ public abstract class MovingObject : MonoBehaviour
     boxCollider = GetComponent<BoxCollider2D>();
     rb2D = GetComponent<Rigidbody2D>();
     spriteRenderer = GetComponent<SpriteRenderer>();
-    inverseMoveTime = 1f / moveTime;
+    inverseMoveTime = 1f / Config.MOVE_TIME;
   }
 
   protected void Move(float xDir, float yDir)

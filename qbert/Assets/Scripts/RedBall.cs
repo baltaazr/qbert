@@ -6,18 +6,10 @@ using System;
 
 public class RedBall : Enemy
 {
-  public Sprite redBall;
-
-  protected override Node node { get; set; }
-  protected override Player player { get; set; }
-
   protected override void Start()
   {
+    base.dir = "down";
+    base.coordType = "ball";
     base.Start();
-    (float x, float y) = node.coords.getAbsoluteCoords("ball");
-    transform.position = new Vector2(x, y);
-
-    base.interSprite = redBall;
-    base.endSprite = redBall;
   }
 }

@@ -19,7 +19,7 @@ public class Config
   public static double[] UGG_OFFSET = new double[2] { 0.4, -0.3 };
 
   public static string[] HEX_SURROUNDINGS = new string[4] {
-    "topLeft","topRight","botLeft","botRight"
+    "botLeft","botRight","topLeft","topRight"
   };
 
   public static Dictionary<string, Coords> HEX_SURROUNDINGS_OFFSET = new Dictionary<string, Coords>()
@@ -37,6 +37,9 @@ public class Config
   public const int NUMBER_OF_ROUNDS = 4;
 
   public const float ANIMATION_DELAY = 0.1f;
+
+  // 5 levels in total
+  // 4 rounds per level
 
   public static int[,][] LEVELS = new int[,][]{
     { new int[2]{0,1}, new int[2]{0,5}, new int[2]{0,6}, new int[2]{0,7} },
@@ -60,6 +63,26 @@ public class Config
     {{0.8f,0.2f,0f},{0.55f,0.45f,0f},{0.5f,0.5f,0f},{0.1f, 0.9f,0f}},
     {{0f,1f,0f},{0.2f,0.7f,0.1f},{0.5f,0f,0.5f},{0.3f, 0.3f,0.4f}},
     {{0.2f,0.3f,0.5f},{0f,1f,0f},{0.2f,0.2f,0.6f},{0.25f, 0.25f,0.5f}},
-    {{0.1f,0.2f,0.7f},{0.2f,0.4f,0.4f},{0f,0f,1f},{0f, 0.5f,5f}}
+    {{0.1f,0.2f,0.7f},{0.2f,0.4f,0.4f},{0f,0f,1f},{0f, 0.5f,0.5f}}
   };
+
+  public const float MOVE_TIME = 0.2f;
+
+  public const float ENEMY_FALLING_TIME = 1.1f;
+
+  public const float PLAYER_REAPPEAR_DELAY = 3f;
+
+  public const float GAME_OVER_DELAY = 2f;
+
+  public const float INIT_ENEMIES_DELAY = 2f;
+
+  public const float DELAY_PER_ENEMY_MOVE = 1f;
+
+  public const float DELAY_PER_ENEMY_SPAWN = 5f;
+
+  public const float LEVEL_START_DELAY = 10f;
+
+  public const float INIT_TELE_DELAY = 0.5f;
+
+  public const int END_ROUND_COLOR_CHANGING_REPEATS = 10;
 }

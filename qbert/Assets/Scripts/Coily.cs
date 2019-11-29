@@ -6,37 +6,32 @@ using System;
 
 public class Coily : Enemy
 {
-  public Sprite egg;
-  public Sprite eggHop;
   public Sprite[] eggToSnake;
-  public Sprite frontView;
-  public Sprite backView;
-  public Sprite hopDown;
-  public Sprite jumpUp;
+  public Sprite frontViewSnake;
+  public Sprite backViewSnake;
+  public Sprite hopDownSnake;
+  public Sprite jumpUpSnake;
 
-  protected override Node node { get; set; }
-  protected override Player player { get; set; }
-
+  private Player player;
   private bool eggForm;
   private bool transition;
 
   protected override void Start()
   {
+    base.dir = "down";
+    base.coordType = "player";
     base.Start();
-    (float x, float y) = node.coords.getAbsoluteCoords("player");
-    transform.position = new Vector2(x, y);
 
     eggForm = true;
     transition = false;
 
-    base.interSprite = eggHop;
-    base.endSprite = egg;
+    player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
   }
 
   public override void MoveEnemy()
   {
     if (transition || base.falling) return;
-    if (eggForm && node.coords.r != Config.MAP_SIZE - 1)
+    if (eggForm && base.node.coords.r != Config.MAP_SIZE - 1)
     {
       base.MoveEnemy();
       return;
@@ -46,25 +41,27 @@ public class Coily : Enemy
       StartCoroutine(ChangeToSnake());
       return;
     }
-    (float x, float y) = node.coords.getAbsoluteCoords("player");
-    Sprite interSprite = hopDown;
-    Sprite endSprite = frontView;
+    (float x, float y) = base.node.coords.getAbsoluteCoords(base.coordType);
+    Sprite interSprite = hopDownSnake;
+    Sprite endSprite = frontViewSnake;
     bool flip = false;
+    bool fall = false;
 
     Coords playerCoords = player.getNodeCoords();
     // GREEDY SEARCH
     string[] s = Config.HEX_SURROUNDINGS;
-    IEnumerator enumerator = node.sur.Keys.GetEnumerator();
+    IEnumerator enumerator = base.node.sur.Keys.GetEnumerator();
     enumerator.MoveNext();
     string curDir = (string)enumerator.Current;
-    double curDist = node.sur[curDir].coords.dist(playerCoords);
+    double curDist = base.node.sur[curDir].coords.dist(playerCoords);
     for (int i = 0; i < s.Length; i++)
     {
-      if (node.sur.ContainsKey(s[i]))
+      if (base.node.sur.ContainsKey(s[i]))
       {
-        double tempDist = node.sur[s[i]].coords.dist(playerCoords);
-        if (tempDist < curDist)
+        double tempDist = base.node.sur[s[i]].coords.dist(playerCoords);
+        if (tempDist < curDist || (tempDist == curDist && fall))
         {
+          fall = false;
           curDir = s[i];
           curDist = tempDist;
         }
@@ -72,49 +69,48 @@ public class Coily : Enemy
       else
       {
         Coords offset = Config.HEX_SURROUNDINGS_OFFSET[s[i]];
-        double tempDist = new Coords(node.coords.q + offset.q, node.coords.r + offset.r).dist(playerCoords);
+        double tempDist = new Coords(base.node.coords.q + offset.q, base.node.coords.r + offset.r).dist(playerCoords);
         if (tempDist < curDist)
         {
+          fall = true;
           curDir = s[i];
           curDist = tempDist;
         }
       }
     }
-    if (!node.sur.ContainsKey(curDir))
+    if (fall)
     {
       Coords offset = Config.HEX_SURROUNDINGS_OFFSET[curDir];
-      node = new Node(new Coords(node.coords.q + offset.q, node.coords.r + offset.r));
+      base.node = new Node(new Coords(base.node.coords.q + offset.q, base.node.coords.r + offset.r));
       GameManager.instance.DecreaseCoilyCount();
-      StartCoroutine(base.Fall(0, -10, true));
+      StartCoroutine(base.Fall(0, -10, curDir == "topLeft" || curDir == "topRight"));
     }
     else
     {
-      node = node.sur[curDir];
+      base.node = base.node.sur[curDir];
     }
     switch (curDir)
     {
       case "topLeft":
         flip = true;
-        interSprite = jumpUp;
-        endSprite = backView;
+        interSprite = jumpUpSnake;
+        endSprite = backViewSnake;
         break;
       case "topRight":
-        interSprite = jumpUp;
-        endSprite = backView;
+        interSprite = jumpUpSnake;
+        endSprite = backViewSnake;
         break;
       case "botLeft":
-        interSprite = hopDown;
-        endSprite = frontView;
+        interSprite = hopDownSnake;
+        endSprite = frontViewSnake;
         break;
       case "botRight":
         flip = true;
-        interSprite = hopDown;
-        endSprite = frontView;
-        break;
-      default:
+        interSprite = hopDownSnake;
+        endSprite = frontViewSnake;
         break;
     }
-    (float newX, float newY) = node.coords.getAbsoluteCoords("player");
+    (float newX, float newY) = base.node.coords.getAbsoluteCoords(base.coordType);
     if (flip)
       transform.rotation = Quaternion.Euler(0, 180, 0);
     else

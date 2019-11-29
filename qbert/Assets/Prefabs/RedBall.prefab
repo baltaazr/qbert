@@ -107,7 +107,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 0.1, y: 0.1}
   m_EdgeRadius: 0
 --- !u!50 &6957684006799163789
 Rigidbody2D:
@@ -142,8 +142,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d97536e4914e3469b0408f71b31ae5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveTime: 0.1
   blockingLayer:
     serializedVersion: 2
     m_Bits: 256
-  redBall: {fileID: 21300000, guid: 270faae4e247fcf3e98a90f53cc66851, type: 3}
+  frontView: {fileID: 21300000, guid: 270faae4e247fcf3e98a90f53cc66851, type: 3}
+  hopDown: {fileID: 21300000, guid: 270faae4e247fcf3e98a90f53cc66851, type: 3}

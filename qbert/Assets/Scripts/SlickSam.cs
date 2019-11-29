@@ -4,31 +4,30 @@ using UnityEngine;
 
 public class SlickSam : Enemy
 {
-  public Sprite frontView;
-  public Sprite hopDown;
-
-  protected override Node node { get; set; }
-  protected override Player player { get; set; }
 
   protected override void Start()
   {
+    base.dir = "down";
+    base.coordType = "player";
     base.Start();
-    (float x, float y) = node.coords.getAbsoluteCoords("player");
-    transform.position = new Vector2(x, y);
+  }
 
-    base.interSprite = hopDown;
-    base.endSprite = frontView;
+  protected override void EndFalling()
+  {
+    base.EndFalling();
+    GameManager.instance.mapScript.prevCube(base.node.coords.getStringRep());
   }
 
   public override void MoveEnemy()
   {
+    if (base.falling) { return; }
     base.MoveEnemy();
-    GameManager.instance.mapScript.prevCube(node.coords.getStringRep());
+    GameManager.instance.mapScript.prevCube(base.node.coords.getStringRep());
   }
 
   void OnTriggerEnter2D(Collider2D other)
   {
-    if (other.tag == "Player" && !base.falling)
+    if (other.tag == "Player")
     {
       GameManager.instance.RemoveEnemyFromList(this);
       Destroy(gameObject);

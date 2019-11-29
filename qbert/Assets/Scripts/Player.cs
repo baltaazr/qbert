@@ -11,7 +11,10 @@ public class Player : MovingObject
   public Sprite[] teleSprites;
   public Sprite[] reappearSprites;
   public Sprite[] disintegrateSprites;
-  public float deathDelay = 2f;
+  public AudioClip moveSound1;
+  public AudioClip moveSound2;
+  public AudioClip moveSound3;
+  public AudioClip teleportSound;
 
   private Node node;
   private bool teleporting;
@@ -49,12 +52,12 @@ public class Player : MovingObject
         node = new Node(new Coords(node.coords.q, node.coords.r - 1));
         if (GameManager.instance.mapScript.attemptTele(node.coords.getStringRep()))
         {
-          Invoke("Tele", MapManager.teleDelay);
+          Invoke("Tele", Config.INIT_TELE_DELAY);
         }
         else
         {
           base.spriteRenderer.sortingLayerName = "Default";
-          Invoke("Fall", 0.2f);
+          Fall();
         }
       }
 
@@ -73,7 +76,7 @@ public class Player : MovingObject
         node = new Node(new Coords(node.coords.q + 1, node.coords.r - 1));
         if (GameManager.instance.mapScript.attemptTele(node.coords.getStringRep()))
         {
-          Invoke("Tele", MapManager.teleDelay);
+          Invoke("Tele", Config.INIT_TELE_DELAY);
         }
         else
         {
@@ -115,6 +118,10 @@ public class Player : MovingObject
     }
     if (move)
     {
+      if (!dying)
+      {
+        SoundManager.instance.RandomizeSfx(moveSound1, moveSound2, moveSound3);
+      }
       (float newX, float newY) = node.coords.getAbsoluteCoords("player");
       if (flip)
         transform.rotation = Quaternion.Euler(0, 180, 0);
@@ -141,7 +148,7 @@ public class Player : MovingObject
   {
     GameManager.instance.LoseLife();
     dying = true;
-    base.Move(0, -5);
+    base.Move(0, -10);
     StartCoroutine(ReappearAnimation());
   }
 
@@ -155,6 +162,7 @@ public class Player : MovingObject
 
   void Tele()
   {
+    SoundManager.instance.PlaySingle(teleportSound);
     teleporting = true;
     StartCoroutine(TeleAnimation());
   }
@@ -166,6 +174,7 @@ public class Player : MovingObject
       base.spriteRenderer.sprite = teleSprites[i];
       yield return new WaitForSeconds(Config.ANIMATION_DELAY);
     }
+    base.spriteRenderer.enabled = false;
     StartCoroutine(ReappearAnimation());
   }
 
@@ -176,15 +185,15 @@ public class Player : MovingObject
       base.spriteRenderer.sprite = disintegrateSprites[i];
       yield return new WaitForSeconds(Config.ANIMATION_DELAY);
     }
+    base.spriteRenderer.enabled = false;
   }
 
   IEnumerator ReappearAnimation()
   {
-    if (dying)
-    {
-      yield return new WaitForSeconds(deathDelay);
-      base.spriteRenderer.sortingLayerName = "Units";
-    }
+    yield return new WaitForSeconds(Config.PLAYER_REAPPEAR_DELAY);
+    base.spriteRenderer.sortingLayerName = "Units";
+    base.spriteRenderer.enabled = true;
+
     node = GameManager.instance.mapScript.getInitNode();
     (float x, float y) = node.coords.getAbsoluteCoords("player");
     transform.position = new Vector2(x, y);

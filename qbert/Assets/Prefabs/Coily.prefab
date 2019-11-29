@@ -107,7 +107,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 0.3, y: 0.3}
   m_EdgeRadius: 0
 --- !u!50 &3651721585624324646
 Rigidbody2D:
@@ -146,16 +146,16 @@ MonoBehaviour:
   blockingLayer:
     serializedVersion: 2
     m_Bits: 256
+  frontView: {fileID: 21300000, guid: 4f2f57f4bc2c99eff904bdbe94c0217b, type: 3}
+  hopDown: {fileID: 21300000, guid: d0aa0175eb5bfa76caad5465924e2117, type: 3}
   deathDelay: 0.5
-  egg: {fileID: 21300000, guid: 4f2f57f4bc2c99eff904bdbe94c0217b, type: 3}
-  eggHop: {fileID: 21300000, guid: d0aa0175eb5bfa76caad5465924e2117, type: 3}
   eggToSnake:
   - {fileID: 21300000, guid: acc785a3cf0344d18beafdb777f30d70, type: 3}
   - {fileID: 21300000, guid: b6da79ef591a862ce8d74444679d9e2c, type: 3}
   - {fileID: 21300000, guid: 5b8c6518305b5b606941e7166e350dde, type: 3}
   - {fileID: 21300000, guid: 98d34fad976924173a4eb00e7a4db2f8, type: 3}
   - {fileID: 21300000, guid: eb8a844f0191cd194bdd94e267ab61ff, type: 3}
-  frontView: {fileID: 21300000, guid: 4c86083af4b3899baa40271c18387a72, type: 3}
-  backView: {fileID: 21300000, guid: 3efabd2dfd157a019ae31e6626e50925, type: 3}
-  hopDown: {fileID: 21300000, guid: 9f901c78d081bfffc8009fea9552955b, type: 3}
-  jumpUp: {fileID: 21300000, guid: 4674b3d55bcc8377d82a14819ec82f8c, type: 3}
+  frontViewSnake: {fileID: 21300000, guid: 4c86083af4b3899baa40271c18387a72, type: 3}
+  backViewSnake: {fileID: 21300000, guid: 3efabd2dfd157a019ae31e6626e50925, type: 3}
+  hopDownSnake: {fileID: 21300000, guid: 9f901c78d081bfffc8009fea9552955b, type: 3}
+  jumpUpSnake: {fileID: 21300000, guid: 4674b3d55bcc8377d82a14819ec82f8c, type: 3}
